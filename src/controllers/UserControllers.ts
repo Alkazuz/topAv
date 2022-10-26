@@ -64,3 +64,4 @@ export default {
             return response.status(400).json({message: 'usuario não encontrado, confira o sexo inserido!'})
         },        
 }
+
