@@ -2,6 +2,15 @@ import { Request, Response } from 'express';
 import { json } from 'stream/consumers';
 const Users = require('../users.json');
 
+interface Usuario{
+    id:number,
+    nome:string,
+    sobrenome:string,
+    email:string,
+    sexo:string,
+    idade:number
+}
+
 /**
  * Use o conteúdo da variável `Users` para desenvolver os métodos necessários
  */
@@ -13,12 +22,7 @@ export default {
     async buscarId(request: Request, response: Response){
         let {id} = request.params;
 
-        let user = Users.filter(u => u.id == id)
-        if(user.length == 0) return response.send
-            ({erro: true, message: 'usuário não encontrado'}).status(400)
-        user = user[0];
-
-        user = {nome: user.nome, sobrenome: user.sobrenome, id: user.id}
+        let user = Users.find((user: Usuario) => user.id == parseInt(id))
 
         return response.send(user).status(200)
     },
@@ -33,13 +37,7 @@ export default {
         if(!users || users.length == 0)
             return response.send({error: true, message: 'não há usuários para esse filtro'}).status(400);
         
-        let usersFilter = []
-        users.forEach(users => {
-            usersFilter.push({nome: users.nome, sobrenome: users.sobrenome, idade})
-        });
-
-        
-        return response.json({users: usersFilter})
+        return response.json(users)
 
     },
 
@@ -48,19 +46,12 @@ export default {
 
         if(!sexo) return response.send({error: true, message: 'request inválida'}).status(201)
 
-        let users = Users.filter(user => user.sexo.toLowerCase() == sexo.toLowerCase());
+        let users = Users.filter((user: Usuario) => user.sexo.toLowerCase() == sexo.toLowerCase());
 
         if(!users || users.length == 0)
             return response.send({error: true, message: 'não há usuários para esse filtro'}).status(400);
         
-
-        let usersFilter = []
-        users.forEach(users => {
-            usersFilter.push({nome: users.nome, sobrenome: users.sobrenome, sexo})
-        });
-
-        
-        return response.json({users: usersFilter})
+        return response.json(users)
 
     }
 
