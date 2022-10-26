@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { json } from 'stream/consumers';
 const Users = require('../users.json');
 import * as Yup from 'yup';
 
@@ -24,44 +25,57 @@ interface Usuario{
     idade:number;
 }
 
-export default {
-        //listar
-        async listar(request: Request, response: Response) {
-            const usuario = Users;
-            if(usuario){
-                return response.status(200).json(usuario);
-            }
-            return response.status(400).json({ message: 'nenhum usuário foi encontrado!' });
-        },
-
-        async buscarId(request : Request, response : Response){
-            const {id} = request.params;
-            const usuario = Users.find((usuario: Usuario)=>usuario.id===parseInt(id));
-            if(usuario){
-                return response.status(200).json(usuario);
-            }
-            return response.status(400).json({ message: 'usuario nao encontrado, confira o "iD" inserido' });
-            
-        },
-
-        async buscarIdade(request : Request, response : Response){
-            const {idade} = request.body;
-            const resultado = Users.filter((usuario: Usuario)=>
-                usuario.idade > idade);
-            if(resultado){
-                return response.status(200).json(resultado);
-            }
-            return response.status(400).json({message : 'usuario não encontrado, confira a idade inserida!'})
-        },
-
-        async buscarSexo(request : Request, response : Response){
-            const {sexo} = request.body;
-            const resultado = Users.filter((usuario:Usuario)=>
-                usuario.sexo == sexo);
-            if(resultado){
-                return response.status(200).json(resultado);
-            }
-            return response.status(400).json({message: 'usuario não encontrado, confira o sexo inserido!'})
-        },        
+interface Usuario{
+    id:number,
+    nome:string,
+    sobrenome:string,
+    email:string,
+    sexo:string,
+    idade:number
 }
 
+/**
+ * Use o conteúdo da variável `Users` para desenvolver os métodos necessários
+ */
+export default {
+    async listar(request: Request, response: Response){
+        return response.json(Users).status(200);
+    },
+
+    async buscarId(request: Request, response: Response){
+        let {id} = request.params;
+
+        let user = Users.find((user: Usuario) => user.id == parseInt(id))
+
+        return response.send(user).status(200)
+    },
+    
+    async buscarIdade(request: Request, response: Response){
+        let {idade} = request.body;
+
+        if(!idade) return response.send({error: true, message: 'request inválida'}).status(201)
+
+        let users = Users.filter(user => user.idade > idade);
+
+        if(!users || users.length == 0)
+            return response.send({error: true, message: 'não há usuários para esse filtro'}).status(400);
+        
+        return response.json(users)
+
+    },
+
+    async buscarSexo(request: Request, response: Response){
+        let {sexo} = request.body;
+
+        if(!sexo) return response.send({error: true, message: 'request inválida'}).status(201)
+
+        let users = Users.filter((user: Usuario) => user.sexo.toLowerCase() == sexo.toLowerCase());
+
+        if(!users || users.length == 0)
+            return response.send({error: true, message: 'não há usuários para esse filtro'}).status(400);
+        
+        return response.json(users)
+
+    }
+
+};

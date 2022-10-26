@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(morgan('dev'));
-app.use(userRoutes);
+app.use('/usuario', userRoutes);
 
 app.listen(process.env.PORT, () =>
     console.log('Servidor rodando com sucesso', process.env.PORT)
