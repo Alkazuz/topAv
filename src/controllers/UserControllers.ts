@@ -1,6 +1,29 @@
 import { Request, Response } from 'express';
 import { json } from 'stream/consumers';
 const Users = require('../users.json');
+import * as Yup from 'yup';
+
+// yarn add yup @types/yup
+const userSchema = Yup.object().shape({
+    name: Yup.string().required(),
+    sexo: Yup.string().email().required(),
+    username: Yup.string().required(),
+    _id: Yup.string().required(),
+    idade: Yup.string().required(),
+    
+});
+const deleteUserSchema = Yup.object().shape({
+    sexo: Yup.string().email().required(),
+});
+
+interface Usuario{
+    id:number;
+    nome:String;
+    sobrenome:String;
+    email:String;
+    sexo:String;
+    idade:number;
+}
 
 interface Usuario{
     id:number,
